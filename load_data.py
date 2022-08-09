@@ -1,5 +1,6 @@
 """
 Created on: Fri. 5 Aug. 2022
+Updated on: Tue. 9 Aug. 2022
 Author: Mélina Verger
 """
 
@@ -32,34 +33,39 @@ FILE_NAME = "studentInfo.csv"
 
 
 
-## Create and go to a new folder
+## Create and go to a new folder if does not exist
 
-os.mkdir("data")
-print("----------\nCreation of a new folder 'data'.", flush=True)
+if not os.path.exists("./data/data.zip"):
 
-os.chdir("data")
+    os.mkdir("data")
+    print("----------\nCreation of a new folder 'data'.", flush=True)
 
-
-
-## Dowload the data from its URL and save the data into a ZIP file
-
-url_data = "https://analyse.kmi.open.ac.uk/open_dataset/download"
-
-response = requests.get(url_data)
-
-open("data.zip", "wb").write(response.content)
-print("Data downloaded in the 'data' folder.", flush=True)
+    os.chdir("data")
 
 
 
-## Open the ZIP file and extract one data set
+    ## Dowload the data from its URL and save the data into a ZIP file
 
-# ZIP file handler
-zf = zipfile.ZipFile("data.zip")
+    url_data = "https://analyse.kmi.open.ac.uk/open_dataset/download"
 
-# Extract the file from the ZIP folder
-zf.extract(FILE_NAME)
-print("'" + FILE_NAME + "' extracted into the 'data' folder.", flush=True)
+    response = requests.get(url_data)
+
+    open("data.zip", "wb").write(response.content)
+    print("Data downloaded in the 'data' folder.", flush=True)
+
+
+
+    ## Open the ZIP file and extract one data set
+
+    # ZIP file handler
+    zf = zipfile.ZipFile("data.zip")
+
+    # Extract the file from the ZIP folder
+    zf.extract(FILE_NAME)
+    print("'" + FILE_NAME + "' extracted into the 'data' folder.", flush=True)
+
+else:
+    print("----------\n'.data/data.zip' already exists." )
 
 
 
