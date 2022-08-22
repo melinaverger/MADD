@@ -6,7 +6,7 @@ Author: Mélina Verger
 
 ## Libraries
 
-# For data maniuplation
+# For data manipulation
 import pandas as pd
 
 
