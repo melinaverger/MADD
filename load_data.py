@@ -16,9 +16,6 @@ from datetime import timedelta
 # To make HTTP requests
 import requests
 
-# To interact with ZIP file
-import zipfile
-
 
 
 ## Start the clock
@@ -52,17 +49,6 @@ if not os.path.exists("./data/data.zip"):
 
     open("data.zip", "wb").write(response.content)
     print("Data downloaded in the 'data' folder.", flush=True)
-
-
-
-    ## Open the ZIP file and extract one data set
-
-    # ZIP file handler
-    zf = zipfile.ZipFile("data.zip")
-
-    # Extract the file from the ZIP folder
-    zf.extract(FILE_NAME)
-    print("'" + FILE_NAME + "' extracted into the 'data' folder.", flush=True)
 
 else:
     print("----------\n'.data/data.zip' already exists." )
