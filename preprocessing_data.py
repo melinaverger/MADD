@@ -31,7 +31,7 @@ start_time = time.monotonic()
 ## Read the data
 
 studentAll = pd.read_csv("./data/studentAll.csv")
-print("----------\nRead 'studentInfo.All'.", flush=True)
+print("----------\nRead 'studentAll.csv'.", flush=True)
 
 
 
