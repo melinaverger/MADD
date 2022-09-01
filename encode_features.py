@@ -1,6 +1,7 @@
 """
 Created on: Fri. 5 Aug. 2022
 Updated on: Tue. 9 Aug. 2022
+Updated on: Thu. 1 Sep. 2022
 Author: Mélina Verger
 """
 
@@ -56,7 +57,7 @@ def encode_disability(x):
         return 0
 
 def encode_final_result(x):
-    if x == "Pass":
+    if x == "Pass" or x == "Distinction":
         return 1
     else:  # "Fail"
         return 0
