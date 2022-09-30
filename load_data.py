@@ -2,7 +2,10 @@
 Created on: Fri. 5 Aug. 2022
 Updated on: Tue. 9 Aug. 2022
 Updated on: Mon. 29 Aug. 2022
+Updated on: Fri. 30 Sep. 2022
 Author: Mélina Verger
+
+Get the data on your computer.
 """
 
 ## Libraries
@@ -24,16 +27,11 @@ start_time = time.monotonic()
 
 
 
-## Assign a constant variable
-FILE_NAME = "studentInfo.csv"
-
-
-
 ## Create and go to a new folder if does not exist
 if not os.path.exists("./data/data.zip"):
 
     os.mkdir("data")
-    print("----------\nCreation of a new folder 'data'.", flush=True)
+    print("\n---------\nCreation of a new folder 'data'.", flush=True)
 
     os.chdir("data")
 
@@ -48,10 +46,11 @@ if not os.path.exists("./data/data.zip"):
     print("Data downloaded in the 'data' folder.", flush=True)
 
 else:
-    print("----------\n'.data/data.zip' already exists." )
+    print("\n----------\n'.data/data.zip' already exists." )
 
 
 
 ## End the clock
 end_time = time.monotonic()
 print("----------\nExecution time:", timedelta(seconds=end_time - start_time), flush=True)
+print("\n", flush=True)

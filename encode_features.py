@@ -3,6 +3,10 @@ Created on: Fri. 5 Aug. 2022
 Updated on: Tue. 9 Aug. 2022
 Updated on: Thu. 1 Sep. 2022
 Author: Mélina Verger
+
+Encode the features.
+
+>> Add condition for encoding only the features that are present without generating an error.
 """
 
 ## Libraries
