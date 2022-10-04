@@ -39,8 +39,13 @@ You can check the scaling step by runing `check_scaling_data.ipynb`.
 
 You have now a data set ready for analyses and machine learning.
 
-## 3. Features analysis and data vizualisation
+## 3. Features analysis
 
-### 3.1. Features analysis
+To plot different information for feature analysis, do "Run All" into `features_analysis.ipynb`.
 
-### 3.2. Data vizualisation
+## 4. Machine learning pipeline
+
+### 4...
+You will have the plots only when you will run `experiment1.ipynb` since we need to do data vizualisation only on the training sets. See them into `dataviz.ipynb`.
+
+
