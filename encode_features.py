@@ -4,9 +4,7 @@ Updated on: Tue. 9 Aug. 2022
 Updated on: Thu. 1 Sep. 2022
 Author: Mélina Verger
 
-Encode the features.
-
->> Add condition for encoding only the features that are present without generating an error.
+Encode the present features.
 """
 
 ## Libraries
@@ -67,19 +65,26 @@ def encode_final_result(x):
         return 0
 
 def labelencoding(dataframe):
-    # specific syntax to avoid SettingWithCopyWarning
-    dataframe.loc[:, "gender"] = dataframe.gender.apply(encode_gender)
-    dataframe.loc[:, 'highest_education'] = dataframe.highest_education.apply(encode_education)
-    dataframe.loc[:, 'imd_band'] = dataframe.imd_band.apply(encode_imd)
-    dataframe.loc[:, 'age_band'] = dataframe.age_band.apply(encode_age)
-    dataframe.loc[:, 'disability'] = dataframe.disability.apply(encode_disability)
-    dataframe.loc[:, 'final_result'] = dataframe.final_result.apply(encode_final_result)
+    # conditions for encoding only the features that are present
+    if "gender" in dataframe.columns:
+        # specific syntax to avoid SettingWithCopyWarning
+        dataframe.loc[:, "gender"] = dataframe.gender.apply(encode_gender)
+    if "highest_education" in dataframe.columns:
+        dataframe.loc[:, 'highest_education'] = dataframe.highest_education.apply(encode_education)
+    if "imd_band" in dataframe.columns:
+        dataframe.loc[:, "imd_band"] = dataframe.imd_band.apply(encode_imd)
+    if "age_band" in dataframe.columns:
+        dataframe.loc[:, "age_band"] = dataframe.age_band.apply(encode_age)
+    if "disability" in dataframe.columns:
+        dataframe.loc[:, "disability"] = dataframe.disability.apply(encode_disability)
+    if "final_result" in dataframe.columns:
+        dataframe.loc[:, "final_result"] = dataframe.final_result.apply(encode_final_result)
     return dataframe
 
 # One-hot encoding
 
 def onehotencoding(dataframe):
-    # prevent from feature removing before encoding
+    # prevent from feature removal before encoding
     col = list()
     for column in dataframe.columns:
         if column == "code_module" or column == "code_presentation" or column == "region":

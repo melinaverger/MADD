@@ -6,7 +6,7 @@ Updated on: Fri. 30 Sep. 2022
 Author: Mélina Verger
 
 Choose the set, clean missing and noisy values, remove duplicates and 'id_student' column, 
-encode categorical features, scaled data, and save the prepared set.
+encode categorical features, scale data, and save the prepared set.
 """
 
 ## Libraries
@@ -17,7 +17,6 @@ from sys import exit
 # To check the execution time of the script
 import time
 from datetime import timedelta
-from tkinter import E
 
 # For data maniuplation and analysis
 import pandas as pd
@@ -38,10 +37,8 @@ start_time = time.monotonic()
 
 ## Make the data sets choice and read the data
 
-print("\n----------\n", flush=True)
-user_response1 = input("Do you want to work with stInfo or stAll set? (Write either 'stInfo' or 'stAll' and \
-    press enter.)")
-
+print("\n----------", flush=True)
+user_response1 = input("Do you want to work with stInfo or stAll set? (Write either stInfo or stAll and press enter.)\n> ")
 if user_response1 == "stInfo":
     data = pd.read_csv("./data/studentInfo.csv")
     print("Read 'studentInfo.csv'.", flush=True)
@@ -57,9 +54,10 @@ else:
 ## Remove missing and noisy values (in the rows)
 
 # Missing values
-user_response2 = input("\nDo you want to remove missing values from 'imd_band' column? (y/n)")
+user_response2 = input("\nDo you want to remove missing values from 'imd_band' column? (y/n)\n> ")
 if user_response2 == 'y':
     data = data.dropna(subset=['imd_band']) # from previous studies, we know that there are 1,111 (then 1,030) missing values within this feature
+    print("Missing values from 'imd_band' removed.", flush=True)
 elif user_response2 == 'n':
     print("Missing values not removed.", flush=True)
 else:
@@ -67,39 +65,39 @@ else:
     exit()
 
 # Noise
-user_response3 = input("\nDo you want to remove noisy values 'Withdrawn'? (y/n)")
+user_response3 = input("\nDo you want to remove noisy values 'Withdrawn'? (y/n)\n> ")
 if user_response3 == 'y':
     data = data[data.final_result != "Withdrawn"]
+    print("'Withdrawn' values removed.", flush=True)
 elif user_response3 == 'n':
     print("'Withdrawn' values not removed.", flush=True)
 else:
     print("Invalid choice.", flush=True)
     exit()
 
-user_response4 = input("\nDo you want to remove noisy values 'Distinction'? (y/n)")
+user_response4 = input("\nDo you want to remove noisy values 'Distinction'? (y/n)\n> ")
 if user_response4 == 'y':
     data = data[data.final_result != "Distinction"]
+    print("'Distinction' values removed.", flush=True)
 elif user_response4 == 'n':
     print("'Distinction' values not removed.", flush=True)
 else:
     print("Invalid choice.", flush=True)
     exit()
 
-#studentAll = studentAll[studentAll.final_result != "Withdrawn"]
-# kept for the second xp: studentInfo = studentInfo[studentInfo.final_result != "Distinction"]
-
 # Noise (duplicates)
-user_response5 = input("\nDo you want to remove duplicates of student ids and then remove 'id_student' column? (y/n)")
+user_response5 = input("\nDo you want to remove duplicates of student ids and then remove 'id_student' column? (y/n)\n> ")
 if user_response5 == 'y':
     data = data.drop_duplicates(subset=["id_student"], keep="first")
     data = data.drop(columns=["id_student"])
+    print("Duplicates and 'id_student' removed.", flush=True)
 elif user_response5 == 'n':
     print("Duplicates and 'id_student' not removed.", flush=True)
 else:
     print("Invalid choice.", flush=True)
     exit()
 
-print("\nMissing and noisy values removed.\n", flush=True)
+print("\nThe 'missing and noisy values removal' part is over.\n", flush=True)
 
 
 
@@ -110,10 +108,10 @@ print("Categorical features encoded.\n", flush=True)
 
 data_num_columns = data_num.columns
 if user_response1 == "stInfo":
-    data_num_columns.to_csv("./data/studentInfo_num.csv", index=False)
+    data_num.to_csv("./data/studentInfo_num.csv", index=False)
     print("Numerical data set saved in 'studentInfo_num.csv' file.\n", flush=True)
 elif user_response1 == "stAll":
-    data_num_columns.to_csv("./data/studentAll_num.csv", index=False)
+    data_num.to_csv("./data/studentAll_num.csv", index=False)
     print("Numerical data set saved in 'studentAll_num.csv' file.\n", flush=True)
 else:
     print("Invalid choice.", flush=True)
@@ -122,7 +120,7 @@ else:
 
 ## Scale the data (https://www.kaggle.com/code/rtatman/data-cleaning-challenge-scale-and-normalize-data)
 
-data_num_scaled = minmax_scaling(data_num, columns=data_num, min_val=0, max_val=1)
+data_num_scaled = minmax_scaling(data_num, columns=data_num_columns, min_val=0, max_val=1)
 
 
 
@@ -132,8 +130,8 @@ if user_response1 == "stInfo":
     data_num_scaled.to_csv("./data/studentInfo_num_scaled.csv", index=False)
     print("Numerical scaled data set saved in 'studentInfo_num_scaled.csv' file.", flush=True)
 elif user_response1 == "stAll":
-    data_num_columns.to_csv("./data/studentAll_num.csv", index=False)
-    print("Numerical data set saved in 'studentAll_num.csv' file.", flush=True)
+    data_num_scaled.to_csv("./data/studentAll_num_scaled.csv", index=False)
+    print("Numerical scaled data set saved in 'studentAll_num_scaled.csv' file.", flush=True)
 else:
     print("Invalid choice.", flush=True)
     exit()

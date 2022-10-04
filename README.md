@@ -1,5 +1,7 @@
 # What are the discriminative features?
 
+[![Generic badge](https://img.shields.io/badge/python-3.10.4-green.svg)](https://shields.io/)
+
 ## 1. To use the project on your local computer
 
 Clone the repository and use the following command line to download the needed packages:
@@ -24,13 +26,21 @@ Then, to explore the different sets, run `display_set.ipynb`.
 
 ### 2.2. Preprocessing
 
-Choose the *data sets* you want to work with.
+Choose the *data sets* you want to work with, either:
+1. (stInfo) `studentInfo.csv`: use `display_stInfo.ipynb`, or,
+2. (stAll) `studentInfo.csv`, `studentAssessment.csv`, `assessments.csv`, and `studentVle.csv`(adding scores and clicks): use `merging.ipynb` and `display_stAll.ipynb`.
 
-1. (stInfo) `studentInfo.csv`: use `display_stInfo.ipynb`.
-2. (stAll) `studentInfo.csv`, `studentAssessment.csv`, `assessments.csv`, and `studentVle.csv`(add scores and clicks): use `merging.ipynb` and `display_stAll.ipynb`.
-
-Execute all the preprocessing steps (also using `encode_features.py`):
+Then, execute all the preprocessing steps (that use `encode_features.py`) by runing:
 ```
 python3 preprocessing_data.py
 ```
 
+You can check the scaling step by runing `check_scaling_data.ipynb`.
+
+You have now a data set ready for analyses and machine learning.
+
+## 3. Features analysis and data vizualisation
+
+### 3.1. Features analysis
+
+### 3.2. Data vizualisation
