@@ -45,7 +45,24 @@ To plot different information for feature analysis, do "Run All" into `features_
 
 ## 4. Machine learning pipeline
 
-### 4...
-You will have the plots only when you will run `experiment1.ipynb` since we need to do data vizualisation only on the training sets. See them into `dataviz.ipynb`.
+`train_test_split.ipynb` -> DATA SPLIT saved
+
+`models_training.ipynb` -> models saved
+
+`eval_performance.ipynb` -> predictive performance + FI
+
+`eval_fairness.ipynb` -> 
+
+
+(Old)
+Run `experiment.ipynb` and choose either you want to work with course 'BBB' data only or with the whole the data set, and choose the train-test split ratio between 70-30 and 80-20.
+
+The train and test sets are saved in `./data` folder, and the trained models are saved in `./models` folder.
+
+Some feature importance information are displayed in the notebook. 
+
+### 4. Data vizualisation
+
+Since you have saved a training set, you can now explore this set and only this one via `dataviz.ipynb`.
 
 
