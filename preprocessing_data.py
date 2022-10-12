@@ -3,6 +3,7 @@ Created on: Fri. 5 Aug. 2022
 Updated on: Tue. 9 Aug. 2022
 Updated on: Wed. 31 Aug. 2022
 Updated on: Fri. 30 Sep. 2022
+Updated on: Wed. 12 Oct. 2022
 Author: Mélina Verger
 
 Choose the set, clean missing and noisy values, remove duplicates and 'id_student' column, 
@@ -42,9 +43,11 @@ user_response1 = input("Do you want to work with stInfo or stAll set? (Write eit
 if user_response1 == "stInfo":
     data = pd.read_csv("./data/studentInfo.csv")
     print("Read 'studentInfo.csv'.", flush=True)
+    print(f"Data shape: {data.shape}", flush=True)
 elif user_response1 == "stAll":
     data = pd.read_csv("./data/studentAll.csv")
     print("Read 'studentAll.csv'.", flush=True)
+    print(f"Data shape: {data.shape}", flush=True)
 else:
     print("Invalid choice.")
     exit()
@@ -58,6 +61,7 @@ user_response2 = input("\nDo you want to remove missing values from 'imd_band' c
 if user_response2 == 'y':
     data = data.dropna(subset=['imd_band']) # from previous studies, we know that there are 1,111 (then 1,030) missing values within this feature
     print("Missing values from 'imd_band' removed.", flush=True)
+    print(f"Data shape: {data.shape}", flush=True)
 elif user_response2 == 'n':
     print("Missing values not removed.", flush=True)
 else:
@@ -69,6 +73,7 @@ user_response3 = input("\nDo you want to remove noisy values 'Withdrawn'? (y/n)\
 if user_response3 == 'y':
     data = data[data.final_result != "Withdrawn"]
     print("'Withdrawn' values removed.", flush=True)
+    print(f"Data shape: {data.shape}", flush=True)
 elif user_response3 == 'n':
     print("'Withdrawn' values not removed.", flush=True)
 else:
@@ -79,6 +84,7 @@ user_response4 = input("\nDo you want to remove noisy values 'Distinction'? (y/n
 if user_response4 == 'y':
     data = data[data.final_result != "Distinction"]
     print("'Distinction' values removed.", flush=True)
+    print(f"Data shape: {data.shape}", flush=True)
 elif user_response4 == 'n':
     print("'Distinction' values not removed.", flush=True)
 else:
@@ -91,20 +97,23 @@ if user_response5 == 'y':
     data = data.drop_duplicates(subset=["id_student"], keep="first")
     data = data.drop(columns=["id_student"])
     print("Duplicates and 'id_student' removed.", flush=True)
+    print(f"Data shape: {data.shape}", flush=True)
 elif user_response5 == 'n':
     print("Duplicates and 'id_student' not removed.", flush=True)
 else:
     print("Invalid choice.", flush=True)
     exit()
 
-print("\nThe 'missing and noisy values removal' part is over.\n", flush=True)
+print("\nThe 'missing and noisy values removal' part is over.", flush=True)
+print(f"Data shape: {data.shape}\n", flush=True)
 
 
 
 ## Encoding categorical features
 
 data_num = encoding(data)
-print("Categorical features encoded.\n", flush=True)
+print("Categorical features encoded.", flush=True)
+print(f"Data shape: {data_num.shape}\n", flush=True)
 
 data_num_columns = data_num.columns
 if user_response1 == "stInfo":

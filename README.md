@@ -9,6 +9,11 @@ Clone the repository and use the following command line to download the needed p
 pip install -r requirements.txt
 ```
 
+Then, activate the virtual environment `env` (and enter `deactivate` when you quit):
+```
+source env/bin/activate
+```
+
 ## 2. Start the project
 
 ### 2.1. Loading data
