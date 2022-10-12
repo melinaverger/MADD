@@ -50,24 +50,19 @@ To plot different information for feature analysis, do "Run All" into `features_
 
 ## 4. Machine learning pipeline
 
-`train_test_split.ipynb` -> DATA SPLIT saved
+Run the following notebooks in this order.
 
-`models_training.ipynb` -> models saved
+`train_test_split.ipynb`: to prepare the chosen data set until train-test split.  
+-> It is here to coose if you want to limit the data to course 'BBB' for instance.  
+-> The resulting train and test sets settings along with the split ratio are saved in `DATA` and `SPLIT` files in `data` folder. You do not need to specify the chosen set and ratio for the other notebooks.
 
-`eval_performance.ipynb` -> predictive performance + FI
+`models_training.ipynb`: to select and train models.  
+-> The trained models are saved in `models` folder.
 
-`eval_fairness.ipynb` -> 
+`eval_performance.ipynb`: to test the trained models and return their accuracies and feature importance.
 
-
-(Old)
-Run `experiment.ipynb` and choose either you want to work with course 'BBB' data only or with the whole the data set, and choose the train-test split ratio between 70-30 and 80-20.
-
-The train and test sets are saved in `./data` folder, and the trained models are saved in `./models` folder.
-
-Some feature importance information are displayed in the notebook. 
+`eval_fairness.ipynb`: to evaluate algorihtmic fairness of the trained models.
 
 ### 4. Data vizualisation
 
 Since you have saved a training set, you can now explore this set and only this one via `dataviz.ipynb`.
-
-
