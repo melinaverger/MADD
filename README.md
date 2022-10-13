@@ -64,6 +64,10 @@ Run the following notebooks in this order.
 
 `eval_fairness.ipynb`: to evaluate algorihtmic fairness of the trained models.
 
-### 4. Data vizualisation
+### 4. Intersection area / Distribution comparison
+
+`intersection_area.ipynb`
+
+### 5. Data vizualisation
 
 Since you have saved a training set, you can now explore this set and only this one via `dataviz.ipynb`.
