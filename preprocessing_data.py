@@ -4,6 +4,7 @@ Updated on: Tue. 9 Aug. 2022
 Updated on: Wed. 31 Aug. 2022
 Updated on: Fri. 30 Sep. 2022
 Updated on: Wed. 12 Oct. 2022
+Updated on: Thu. 13 Oct. 2022
 Author: Mélina Verger
 
 Choose the set, clean missing and noisy values, remove duplicates and 'id_student' column, 
@@ -39,7 +40,7 @@ start_time = time.monotonic()
 ## Make the data sets choice and read the data
 
 print("\n----------", flush=True)
-user_response1 = input("Do you want to work with stInfo or stAll set? (Write either stInfo or stAll and press enter.)\n> ")
+user_response1 = input("Do you want to work with stInfo, stAll or stClick set? (Write either stInfo, stAll or stClick and press enter.)\n> ")
 if user_response1 == "stInfo":
     data = pd.read_csv("./data/studentInfo.csv")
     print("Read 'studentInfo.csv'.", flush=True)
@@ -47,6 +48,10 @@ if user_response1 == "stInfo":
 elif user_response1 == "stAll":
     data = pd.read_csv("./data/studentAll.csv")
     print("Read 'studentAll.csv'.", flush=True)
+    print(f"Data shape: {data.shape}", flush=True)
+elif user_response1 == "stClick":
+    data = pd.read_csv("./data/studentClick.csv")
+    print("Read 'studentClick.csv'.", flush=True)
     print(f"Data shape: {data.shape}", flush=True)
 else:
     print("Invalid choice.")
@@ -122,6 +127,9 @@ if user_response1 == "stInfo":
 elif user_response1 == "stAll":
     data_num.to_csv("./data/studentAll_num.csv", index=False)
     print("Numerical data set saved in 'studentAll_num.csv' file.\n", flush=True)
+elif user_response1 == "stClick":
+    data_num.to_csv("./data/studentClick_num.csv", index=False)
+    print("Numerical data set saved in 'studentClick_num.csv' file.\n", flush=True)
 else:
     print("Invalid choice.", flush=True)
     exit()
@@ -141,6 +149,9 @@ if user_response1 == "stInfo":
 elif user_response1 == "stAll":
     data_num_scaled.to_csv("./data/studentAll_num_scaled.csv", index=False)
     print("Numerical scaled data set saved in 'studentAll_num_scaled.csv' file.", flush=True)
+elif user_response1 == "stClick":
+    data_num_scaled.to_csv("./data/studentClick_num_scaled.csv", index=False)
+    print("Numerical scaled data set saved in 'studentClick_num_scaled.csv' file.", flush=True)
 else:
     print("Invalid choice.", flush=True)
     exit()

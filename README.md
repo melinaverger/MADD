@@ -33,7 +33,8 @@ Then, to explore the different sets, run `display_set.ipynb`.
 
 Choose the *data sets* you want to work with, either:
 1. (stInfo) `studentInfo.csv`: use `display_stInfo.ipynb`, or,
-2. (stAll) `studentInfo.csv`, `studentAssessment.csv`, `assessments.csv`, and `studentVle.csv`(adding scores and clicks): use `merging.ipynb` and `display_stAll.ipynb`.
+2. (stAll) `studentInfo.csv`, `studentAssessment.csv`, `assessments.csv`, and `studentVle.csv` (adding scores and clicks): use `merging_stAll.ipynb` and `display_stAll.ipynb`, or,
+3. (stClick) `studentInfo.csv`, and `studentVle.csv` (adding clicks): use `merging_stClick.ipynb`.
 
 Then, execute all the preprocessing steps (that use `encode_features.py`) by runing:
 ```
