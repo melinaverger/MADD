@@ -64,7 +64,7 @@ Run the following notebooks in this order.
 
 `eval_fairness.ipynb`: to evaluate algorihtmic fairness of the trained models.
 
-**N. B.:** See the outpus in the `nbconcert.ipynb`notebooks.
+**N. B.:** See the outpus in the `nbconvert.ipynb`notebooks.
 
 ### 4. Distribution comparison / Intersection area
 
@@ -72,7 +72,7 @@ Run the following notebooks in this order.
 
 `distrib_measure.ipynb`
 
-**N. B.:** See the outpus in the `nbconcert.ipynb`notebooks.
+**N. B.:** See the outpus in the `nbconvert.ipynb`notebooks.
 
 ### 5. Data vizualisation
 
