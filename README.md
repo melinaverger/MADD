@@ -55,24 +55,29 @@ Run the following notebooks in this order.
 
 `train_test_split.ipynb`: to prepare the chosen data set until train-test split.  
 -> It is here to coose if you want to limit the data to course 'BBB' for instance.  
--> The resulting train and test sets settings along with the split ratio are saved in `DATA` and `SPLIT` files in `data` folder. You do not need to specify the chosen set and ratio for the other notebooks.
+-> The resulting train and test sets settings along with the split ratio are saved in `DATA` and `SPLIT` files in `./data` folder. You do not need to specify the chosen set and ratio for the other notebooks.  
+-> It is also here to specificy the sensitive features you choose.
 
 `models_training.ipynb`: to select and train models.  
--> The trained models are saved in `models` folder.
+-> The trained models are saved in `./models` folder.
 
 `eval_performance.ipynb`: to test the trained models and return their accuracies and feature importance.
 
 `eval_fairness.ipynb`: to evaluate algorihtmic fairness of the trained models.
 
-**N. B.:** See the outpus in the `nbconvert.ipynb`notebooks.
+**N. B.:** See the outpus in each associated `nbconvert.ipynb`notebook.
 
-### 4. Distribution comparison / Intersection area
+### 4. Qualitative and quantitavie algorithmic fairness analyses
 
-`distrib_plots.ipynb`
+This section is dedicated to data distribution comparison.
+
+Run the following notebooks in this order.
+
+`distrib_plots.ipynb`: to plot the data distributions of the choosen sensitive features (including their [Kernel Density Estimation](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.gaussian_kde.html)).
 
 `distrib_measure.ipynb`
 
-**N. B.:** See the outpus in the `nbconvert.ipynb`notebooks.
+**N. B.:** See the outpus in each associated `nbconvert.ipynb`notebook.
 
 ### 5. Data vizualisation
 
