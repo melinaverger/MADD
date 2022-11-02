@@ -51,7 +51,7 @@ To plot different information for feature analysis, do "Run All" into `features_
 
 ## 4. Machine learning pipeline
 
-Run the following notebooks in this order.
+Run `train_test_split.ipynb` and it will launch the following notebooks in this order:
 
 `train_test_split.ipynb`: to prepare the chosen data set until train-test split.  
 -> It is here to coose if you want to limit the data to course 'BBB' for instance.  
@@ -65,11 +65,11 @@ Run the following notebooks in this order.
 
 `eval_fairness.ipynb`: to evaluate algorihtmic fairness of the trained models.
 
-**N. B.:** See the outpus in each associated `nbconvert.ipynb`notebook.
+**N. B.:** To see the outpus, look into each associated `nbconvert.ipynb`notebook.
 
 ### 4. Qualitative and quantitavie algorithmic fairness analyses
 
-This section is dedicated to data distribution comparison.
+This section is dedicated to data distribution comparisons.
 
 Run the following notebooks in this order.
 
@@ -77,7 +77,7 @@ Run the following notebooks in this order.
 
 `distrib_measure.ipynb`
 
-**N. B.:** See the outpus in each associated `nbconvert.ipynb`notebook.
+**N. B.:** To see the outpus, look into each associated `nbconvert.ipynb`notebook.
 
 ### 5. Data vizualisation
 
