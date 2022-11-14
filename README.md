@@ -53,10 +53,11 @@ To plot different information for feature analysis, do "Run All" into `features_
 
 Run `train_test_split.ipynb` and it will launch the following notebooks in this order:
 
-`train_test_split.ipynb`: to prepare the chosen data set until train-test split.  
+`train_test_split_and_models.ipynb`: to prepare the chosen data set until train-test split.  
 -> It is here to coose if you want to limit the data to course 'BBB' for instance.  
 -> The resulting train and test sets settings along with the split ratio are saved in `DATA` and `SPLIT` files in `./data` folder. You do not need to specify the chosen set and ratio for the other notebooks.  
--> It is also here to specificy the sensitive features you choose.
+-> It is also here to specificy the sensitive features you choose.  
+-> It is also here to select the classifier models you want to work with.
 
 `models_training.ipynb`: to select and train models.  
 -> The trained models are saved in `./models` folder.
