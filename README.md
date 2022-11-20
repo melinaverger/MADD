@@ -80,3 +80,7 @@ Run the following notebooks in this order.
 ### 5. Data vizualisation
 
 Since you have saved a training set, you can now explore this set and only this one via `dataviz.ipynb`.
+
+## 6. Comparison with ABROCA 
+
+`abroca.ipynb`
