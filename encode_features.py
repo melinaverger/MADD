@@ -2,6 +2,7 @@
 Created on: Fri. 5 Aug. 2022
 Updated on: Tue. 9 Aug. 2022
 Updated on: Thu. 1 Sep. 2022
+Updated on: Thu. 5 Jan. 2023
 Author: Mélina Verger
 
 Encode the present features.
@@ -68,17 +69,17 @@ def labelencoding(dataframe):
     # conditions for encoding only the features that are present
     if "gender" in dataframe.columns:
         # specific syntax to avoid SettingWithCopyWarning
-        dataframe.loc[:, "gender"] = dataframe.gender.apply(encode_gender)
+        dataframe.gender = dataframe.gender.apply(encode_gender)
     if "highest_education" in dataframe.columns:
-        dataframe.loc[:, 'highest_education'] = dataframe.highest_education.apply(encode_education)
+        dataframe.highest_education = dataframe.highest_education.apply(encode_education)
     if "imd_band" in dataframe.columns:
-        dataframe.loc[:, "imd_band"] = dataframe.imd_band.apply(encode_imd)
+        dataframe.imd_band = dataframe.imd_band.apply(encode_imd)
     if "age_band" in dataframe.columns:
-        dataframe.loc[:, "age_band"] = dataframe.age_band.apply(encode_age)
+        dataframe.age_band = dataframe.age_band.apply(encode_age)
     if "disability" in dataframe.columns:
-        dataframe.loc[:, "disability"] = dataframe.disability.apply(encode_disability)
+        dataframe.disability = dataframe.disability.apply(encode_disability)
     if "final_result" in dataframe.columns:
-        dataframe.loc[:, "final_result"] = dataframe.final_result.apply(encode_final_result)
+        dataframe.final_result = dataframe.final_result.apply(encode_final_result)
     return dataframe
 
 # One-hot encoding
