@@ -47,6 +47,7 @@ def interpolate_roc_fun(fpr, tpr, n_grid):
 
 def slice_plot(
     model_name,  # me
+    slice_value,  # me
     majority_roc_fpr,
     minority_roc_fpr,
     majority_roc_tpr,
@@ -68,20 +69,26 @@ def slice_plot(
     No return value; displays slice plot & file is saved to disk
     """
     plt.figure(1, figsize=(6, 5))
-    plt.title("ABROCA - Slice Plot - " + model_name.upper())  # me
+
+    if "nb" in model_name:
+        plt.title("{b} - ABROCA = {a}".format(a=round(slice_value, 2), b="NB"))  # me
+    else:
+        plt.title("{b} - ABROCA = {a}".format(a=round(slice_value, 2), b=model_name.upper()))  # me
     plt.xlabel("False Positive Rate")
     plt.ylabel("True Positive Rate")
     plt.plot(
         majority_roc_fpr,
         majority_roc_tpr,
-        label="{o} - Baseline".format(o=majority_group_name),
+        #label="{o} - Baseline".format(o=majority_group_name),
+        label="{o}".format(o=majority_group_name),  # me
         linestyle="-",
         color="r",
     )
     plt.plot(
         minority_roc_fpr,
         minority_roc_tpr,
-        label="{o} - Comparison".format(o=minority_group_name),
+        #label="{o} - Comparison".format(o=minority_group_name),
+        label="{o}".format(o=minority_group_name),  # me
         linestyle="-",
         color="b",
     )

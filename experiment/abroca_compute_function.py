@@ -101,6 +101,7 @@ def compute_abroca(
             mino = 1
         slice_plot(
             model_name,  # me
+            slice,  # me
             majority_roc_x,
             minority_roc_x,
             majority_roc_y,
