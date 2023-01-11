@@ -73,6 +73,10 @@ def slice_plot(
         plt.title("{b} - ABROCA = {a}".format(a=round(slice_value, 2), b=model_name.upper()))  # added
     plt.xlabel("False Positive Rate")
     plt.ylabel("True Positive Rate")
+    if "imd_band" in majority_group_name:
+        majority_group_name = majority_group_name.replace("imd_band", "poverty")
+    if "imd_band" in minority_group_name:
+        minority_group_name = minority_group_name.replace("imd_band", "poverty")
     plt.plot(
         majority_roc_fpr,
         majority_roc_tpr,
