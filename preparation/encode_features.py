@@ -1,8 +1,4 @@
 """
-Created on: Fri. 5 Aug. 2022
-Updated on: Tue. 9 Aug. 2022
-Updated on: Thu. 1 Sep. 2022
-Updated on: Thu. 5 Jan. 2023
 Author: Mélina Verger
 
 Encode the present features.

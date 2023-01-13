@@ -1,12 +1,4 @@
 """
-Created on: Fri. 5 Aug. 2022
-Updated on: Tue. 9 Aug. 2022
-Updated on: Wed. 31 Aug. 2022
-Updated on: Fri. 30 Sep. 2022
-Updated on: Wed. 12 Oct. 2022
-Updated on: Thu. 13 Oct. 2022
-Updated on: Thu. 5 Jan. 2023
-Updated on: Fri. 6 Jan. 2023
 Author: Mélina Verger
 
 Choose the set, clean missing and noisy values, remove duplicates and 'id_student' column, 
