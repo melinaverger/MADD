@@ -1,5 +1,6 @@
 gender,highest_education,imd_band,age_band,disability,num_of_prev_attempts,studied_credits
 <<<<<<< HEAD
+<<<<<<< HEAD
 0.0,0.75,1.0,0.0,0.0,0.0,0.05
 1.0,0.5,1.0,0.0,1.0,0.0,0.05
 1.0,0.25,1.0,0.0,0.0,0.0,0.05
@@ -1433,6 +1434,8 @@ gender,highest_education,imd_band,age_band,disability,num_of_prev_attempts,studi
 1.0,0.25,0.0,0.0,0.0,0.1666666666666666,0.15
 1.0,0.75,0.0,0.0,0.0,0.1666666666666666,0.1
 =======
+=======
+>>>>>>> master-holder
 0.0,0.5,1.0,0.5,0.0,0.0,0.15
 0.0,0.25,1.0,0.0,0.0,0.0,0.05
 0.0,0.5,1.0,0.0,0.0,0.0,0.05
@@ -3068,4 +3071,7 @@ gender,highest_education,imd_band,age_band,disability,num_of_prev_attempts,studi
 1.0,0.5,0.0,0.0,1.0,0.0,0.05
 0.0,0.5,1.0,0.0,0.0,0.0,0.05
 0.0,0.25,1.0,0.0,0.0,0.0,0.15
+<<<<<<< HEAD
+>>>>>>> master-holder
+=======
 >>>>>>> master-holder

@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 # What are the discriminative features?
 
 [![Generic badge](https://img.shields.io/badge/python-3.10.4-green.svg)](https://shields.io/)
@@ -14,6 +15,8 @@ Then, activate the virtual environment `env` (and enter `deactivate` when you qu
 ```
 source env/bin/activate
 =======
+=======
+>>>>>>> master-holder
 # Is Your Model “MADD”? A Novel Metric to Evaluate Algorithmic Fairness for Predictive Student Models
 
 [![Generic badge](https://img.shields.io/badge/python-3.10.4-green.svg)](https://shields.io/)
@@ -37,11 +40,15 @@ $ pip install -r requirements.txt
 Activate the virtual environment `env` (and deactivate it with `deactivate` command line at the end of your work session) by:
 ```
 $ source env/bin/activate
+<<<<<<< HEAD
+>>>>>>> master-holder
+=======
 >>>>>>> master-holder
 ```
 
 ## 2. Start the project
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 ### 2.1. Loading data
 
@@ -112,6 +119,8 @@ Since you have saved a training set, you can now explore this set and only this 
 
 `abroca.ipynb`
 =======
+=======
+>>>>>>> master-holder
 **N. B.:** The outcomes of this section should already be computed and available in the `data` and `preparation` folders. You can skip this section to go directly to the next one. However, we let the following instructions anyway in case you want to start the projet from scratch.
 
 First of all, go to `preparation` folder.
@@ -170,4 +179,7 @@ By running all `pipeline.ipynb`, it will also automatically run:
 * `abroca.ipynb`: to compute and visualize the  Absolute Between-ROC Area (ABROCA) for all models and all sensitive attributes.
 
 **N. B.:** The outputs of these notebooks are visible in their associated `nbconvert.ipynb` notebook versions.
+<<<<<<< HEAD
+>>>>>>> master-holder
+=======
 >>>>>>> master-holder
