@@ -20,7 +20,9 @@ $ pip install -r requirements.txt  /* or $ pip install env */
 <details>
   <summary markdown="span">If you have `ModuleNotFoundError` anyway while running the code, click here to expand:</summary>
   
-  > Clear the virtual environment from all packages:
+  > You may have changed the name of your local folder. If yes, put its initial name or do the following.
+  > 
+  > Clear the virtual environment:
   > ```
   > $ virtualenv --clear env
   > ```
