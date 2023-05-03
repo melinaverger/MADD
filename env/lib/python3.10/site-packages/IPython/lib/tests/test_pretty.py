@@ -141,9 +141,12 @@ def test_pprint_heap_allocated_type():
     Test that pprint works for heap allocated types.
     """
     module_name = "xxlimited" if sys.version_info < (3, 10) else "xxlimited_35"
+    expected_output = (
+        "xxlimited.Null" if sys.version_info < (3, 10, 6) else "xxlimited_35.Null"
+    )
     xxlimited = pytest.importorskip(module_name)
     output = pretty.pretty(xxlimited.Null)
-    assert output == "xxlimited.Null"
+    assert output == expected_output
 
 
 def test_pprint_nomod():
@@ -419,6 +422,7 @@ def test_collections_counter():
         (Counter(), 'Counter()'),
         (Counter(a=1), "Counter({'a': 1})"),
         (MyCounter(a=1), "MyCounter({'a': 1})"),
+        (Counter(a=1, c=22), "Counter({'c': 22, 'a': 1})"),
     ]
     for obj, expected in cases:
         assert pretty.pretty(obj) == expected

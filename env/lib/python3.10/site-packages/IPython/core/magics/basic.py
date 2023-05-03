@@ -1,7 +1,6 @@
 """Implementation of basic magic functions."""
 
 
-import argparse
 from logging import error
 import io
 import os
@@ -297,8 +296,11 @@ Currently the magic system has the following functions:""",
 
         oname = args and args or '_'
         info = self.shell._ofind(oname)
-        if info['found']:
-            txt = (raw and str or pformat)( info['obj'] )
+        if info.found:
+            if raw:
+                txt = str(info.obj)
+            else:
+                txt = pformat(info.obj)
             page.page(txt)
         else:
             print('Object `%s` not found' % oname)
@@ -368,7 +370,7 @@ Currently the magic system has the following functions:""",
 
         If called without arguments, acts as a toggle.
 
-        When in verbose mode the value --show (and --hide)
+        When in verbose mode the value `--show` (and `--hide`)
         will respectively show (or hide) frames with ``__tracebackhide__ =
         True`` value set.
         """
@@ -491,8 +493,10 @@ Currently the magic system has the following functions:""",
         are supported:  wxPython, PyQt4, PyGTK, Tk and Cocoa (OSX)::
 
             %gui wx      # enable wxPython event loop integration
-            %gui qt4|qt  # enable PyQt4 event loop integration
-            %gui qt5     # enable PyQt5 event loop integration
+            %gui qt      # enable PyQt/PySide event loop integration
+                         # with the latest version available.
+            %gui qt6     # enable PyQt6/PySide6 event loop integration
+            %gui qt5     # enable PyQt5/PySide2 event loop integration
             %gui gtk     # enable PyGTK event loop integration
             %gui gtk3    # enable Gtk3 event loop integration
             %gui gtk4    # enable Gtk4 event loop integration

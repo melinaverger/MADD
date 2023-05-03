@@ -8,6 +8,7 @@ import json
 import mimetypes
 import os
 from pathlib import Path
+from typing import Any, Dict, Optional, Tuple
 
 import jinja2
 import markupsafe
@@ -16,11 +17,12 @@ from traitlets import Bool, Unicode, default
 from traitlets.config import Config
 
 if tuple(int(x) for x in jinja2.__version__.split(".")[:3]) < (3, 0, 0):
-    from jinja2 import contextfilter
+    from jinja2 import contextfilter  # type:ignore
 else:
     from jinja2 import pass_context as contextfilter
 
 from jinja2.loaders import split_template_path
+from nbformat import NotebookNode
 
 from nbconvert.filters.highlight import Highlight2HTML
 from nbconvert.filters.markdown_mistune import IPythonRenderer, MarkdownWithMath
@@ -55,7 +57,7 @@ def find_lab_theme(theme_name):
     matching_themes = []
     theme_path = None
     for path in paths:
-        for (dirpath, dirnames, filenames) in os.walk(path):
+        for dirpath, dirnames, filenames in os.walk(path):
             # If it's a federated labextension that contains themes
             if "package.json" in filenames and "themes" in dirnames:
                 # TODO Find the theme name in the JS code instead?
@@ -70,13 +72,15 @@ def find_lab_theme(theme_name):
                     theme_path = Path(dirpath) / "themes" / labext_name
 
     if len(matching_themes) == 0:
-        raise ValueError(f'Could not find lab theme "{theme_name}"')
+        msg = f'Could not find lab theme "{theme_name}"'
+        raise ValueError(msg)
 
     if len(matching_themes) > 1:
-        raise ValueError(
+        msg = (
             f'Found multiple themes matching "{theme_name}": {matching_themes}. '
             "Please be more specific about which theme you want to use."
         )
+        raise ValueError(msg)
 
     return full_theme_name, theme_path
 
@@ -204,10 +208,14 @@ class HTMLExporter(TemplateExporter):
         return MarkdownWithMath(renderer=renderer).render(source)
 
     def default_filters(self):
+        """Get the default filters."""
         yield from super().default_filters()
         yield ("markdown2html", self.markdown2html)
 
-    def from_notebook_node(self, nb, resources=None, **kw):
+    def from_notebook_node(  # type:ignore
+        self, nb: NotebookNode, resources: Optional[Dict] = None, **kw: Any
+    ) -> Tuple[str, Dict]:
+        """Convert from notebook node."""
         langinfo = nb.metadata.get("language_info", {})
         lexer = langinfo.get("pygments_lexer", langinfo.get("name", None))
         highlight_code = self.filters.get(
@@ -222,7 +230,7 @@ class HTMLExporter(TemplateExporter):
         self.register_filter("filter_data_type", filter_data_type)
         return super().from_notebook_node(nb, resources, **kw)
 
-    def _init_resources(self, resources):
+    def _init_resources(self, resources):  # noqa
         def resources_include_css(name):
             env = self.environment
             code = """<style type="text/css">\n%s</style>""" % (env.loader.get_source(env, name)[0])
@@ -245,21 +253,21 @@ class HTMLExporter(TemplateExporter):
                     # Replace asset url by a base64 dataurl
                     with open(theme_path / asset, "rb") as assetfile:
                         base64_data = base64.b64encode(assetfile.read())
-                        base64_data = base64_data.replace(b"\n", b"").decode("ascii")
+                        base64_str = base64_data.replace(b"\n", b"").decode("ascii")
 
-                        data = data.replace(
-                            local_url, f"url(data:{mime_type};base64,{base64_data})"
-                        )
+                        data = data.replace(local_url, f"url(data:{mime_type};base64,{base64_str})")
 
             code = """<style type="text/css">\n%s</style>""" % data
             return markupsafe.Markup(code)
 
         def resources_include_js(name):
+            """Get the resources include JS for a name."""
             env = self.environment
             code = """<script>\n%s</script>""" % (env.loader.get_source(env, name)[0])
             return markupsafe.Markup(code)
 
         def resources_include_url(name):
+            """Get the resources include url for a name."""
             env = self.environment
             mime_type, encoding = mimetypes.guess_type(name)
             try:
@@ -277,7 +285,8 @@ class HTMLExporter(TemplateExporter):
                             data = f.read()
                             break
                 else:
-                    raise ValueError(f"No file {name!r} found in {searchpath!r}")
+                    msg = f"No file {name!r} found in {searchpath!r}"
+                    raise ValueError(msg)
             data = base64.b64encode(data)
             data = data.replace(b"\n", b"").decode("ascii")
             src = f"data:{mime_type};base64,{data}"

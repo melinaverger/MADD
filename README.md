@@ -15,8 +15,19 @@ $ cd <path of the repository>
 
 Then, download the needed packages to run all scripts using the following command line:
 ```
-$ pip install -r requirements.txt
+$ pip install -r requirements.txt  /* or $ pip install env */
 ```
+<details>
+  <summary markdown="span">If you have `ModuleNotFoundError` anyway while running the code, click here to expand:</summary>
+  
+  > Clear the virtual environment from all packages:
+  > ```
+  > $ virtualenv --clear env
+  > ```
+  > 
+  > Download the following packages with `pip install <name of the package>` command line: pandas, scikit-learn, nbconvert, matplotlib, seaborn, tabulate.
+</details>
+&nbsp;  
 
 Activate the virtual environment `env` (and deactivate it with `deactivate` command line at the end of your work session) by:
 ```

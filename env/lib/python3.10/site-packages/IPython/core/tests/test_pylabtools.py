@@ -155,9 +155,6 @@ def test_import_pylab():
     assert ns["np"] == np
 
 
-from traitlets.config import Config
-
-
 class TestPylabSwitch(object):
     class Shell(InteractiveShell):
         def init_history(self):
@@ -196,7 +193,6 @@ class TestPylabSwitch(object):
         matplotlib.rcParamsOrig = self._saved_rcParamsOrig
 
     def test_qt(self):
-
         s = self.Shell()
         gui, backend = s.enable_matplotlib(None)
         assert gui == "qt"

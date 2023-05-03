@@ -6,8 +6,8 @@ of the public API.
 The classes should behave roughly in the style of scikit-learn.
 
 - All data-independent parameters should be passed to the class constructor.
-- Each class should impelment a default transformation that is exposed through
-  __call__. These are currently written for vector arguements, but I think
+- Each class should implement a default transformation that is exposed through
+  __call__. These are currently written for vector arguments, but I think
   consuming a whole `plot_data` DataFrame and return it with transformed
   variables would make more sense.
 - Some class have data-dependent preprocessing that should be cached and used
@@ -24,12 +24,17 @@ The classes should behave roughly in the style of scikit-learn.
   class instantiation.
 
 """
-from distutils.version import LooseVersion
 from numbers import Number
 import numpy as np
-import scipy as sp
-from scipy import stats
+import pandas as pd
+try:
+    from scipy.stats import gaussian_kde
+    _no_scipy = False
+except ImportError:
+    from .external.kde import gaussian_kde
+    _no_scipy = True
 
+from .algorithms import bootstrap
 from .utils import _check_argument
 
 
@@ -63,7 +68,7 @@ class KDE:
         clip : pair of numbers or None, or a pair of such pairs
             Do not evaluate the density outside of these limits.
         cumulative : bool, optional
-            If True, estimate a cumulative distribution function.
+            If True, estimate a cumulative distribution function. Requires scipy.
 
         """
         if clip is None:
@@ -75,6 +80,9 @@ class KDE:
         self.cut = cut
         self.clip = clip
         self.cumulative = cumulative
+
+        if cumulative and _no_scipy:
+            raise RuntimeError("Cumulative KDE evaluation requires scipy")
 
         self.support = None
 
@@ -129,12 +137,9 @@ class KDE:
         """Fit the scipy kde while adding bw_adjust logic and version check."""
         fit_kws = {"bw_method": self.bw_method}
         if weights is not None:
-            if LooseVersion(sp.__version__) < "1.2.0":
-                msg = "Weighted KDE requires scipy >= 1.2.0"
-                raise RuntimeError(msg)
             fit_kws["weights"] = weights
 
-        kde = stats.gaussian_kde(fit_data, **fit_kws)
+        kde = gaussian_kde(fit_data, **fit_kws)
         kde.set_bandwidth(kde.factor * self.bw_adjust)
 
         return kde
@@ -189,6 +194,8 @@ class KDE:
             return self._eval_bivariate(x1, x2, weights)
 
 
+# Note: we no longer use this for univariate histograms in histplot,
+# preferring _stats.Hist. We'll deprecate this once we have a bivariate Stat class.
 class Histogram:
     """Univariate and bivariate histogram estimator."""
     def __init__(
@@ -209,7 +216,7 @@ class Histogram:
 
             - `count`: show the number of observations in each bin
             - `frequency`: show the number of observations divided by the bin width
-            - `probability`: or `proportion`: normalize such that bar heights sum to 1
+            - `probability` or `proportion`: normalize such that bar heights sum to 1
             - `percent`: normalize such that bar heights sum to 100
             - `density`: normalize such that the total area of the histogram equals 1
 
@@ -256,6 +263,9 @@ class Histogram:
         elif binwidth is not None:
             step = binwidth
             bin_edges = np.arange(start, stop + step, step)
+            # Handle roundoff error (maybe there is a less clumsy way?)
+            if bin_edges.max() < stop or len(bin_edges) < 2:
+                bin_edges = np.append(bin_edges, bin_edges.max() + step)
         else:
             bin_edges = np.histogram_bin_edges(
                 x, bins, binrange, weights,
@@ -391,7 +401,7 @@ class Histogram:
 class ECDF:
     """Univariate empirical cumulative distribution estimator."""
     def __init__(self, stat="proportion", complementary=False):
-        """Initialize the class with its paramters
+        """Initialize the class with its parameters
 
         Parameters
         ----------
@@ -439,3 +449,106 @@ class ECDF:
             return self._eval_univariate(x1, weights)
         else:
             return self._eval_bivariate(x1, x2, weights)
+
+
+class EstimateAggregator:
+
+    def __init__(self, estimator, errorbar=None, **boot_kws):
+        """
+        Data aggregator that produces an estimate and error bar interval.
+
+        Parameters
+        ----------
+        estimator : callable or string
+            Function (or method name) that maps a vector to a scalar.
+        errorbar : string, (string, number) tuple, or callable
+            Name of errorbar method (either "ci", "pi", "se", or "sd"), or a tuple
+            with a method name and a level parameter, or a function that maps from a
+            vector to a (min, max) interval.
+        boot_kws
+            Additional keywords are passed to bootstrap when error_method is "ci".
+
+        """
+        self.estimator = estimator
+
+        method, level = _validate_errorbar_arg(errorbar)
+        self.error_method = method
+        self.error_level = level
+
+        self.boot_kws = boot_kws
+
+    def __call__(self, data, var):
+        """Aggregate over `var` column of `data` with estimate and error interval."""
+        vals = data[var]
+        if callable(self.estimator):
+            # You would think we could pass to vals.agg, and yet:
+            # https://github.com/mwaskom/seaborn/issues/2943
+            estimate = self.estimator(vals)
+        else:
+            estimate = vals.agg(self.estimator)
+
+        # Options that produce no error bars
+        if self.error_method is None:
+            err_min = err_max = np.nan
+        elif len(data) <= 1:
+            err_min = err_max = np.nan
+
+        # Generic errorbars from user-supplied function
+        elif callable(self.error_method):
+            err_min, err_max = self.error_method(vals)
+
+        # Parametric options
+        elif self.error_method == "sd":
+            half_interval = vals.std() * self.error_level
+            err_min, err_max = estimate - half_interval, estimate + half_interval
+        elif self.error_method == "se":
+            half_interval = vals.sem() * self.error_level
+            err_min, err_max = estimate - half_interval, estimate + half_interval
+
+        # Nonparametric options
+        elif self.error_method == "pi":
+            err_min, err_max = _percentile_interval(vals, self.error_level)
+        elif self.error_method == "ci":
+            units = data.get("units", None)
+            boots = bootstrap(vals, units=units, func=self.estimator, **self.boot_kws)
+            err_min, err_max = _percentile_interval(boots, self.error_level)
+
+        return pd.Series({var: estimate, f"{var}min": err_min, f"{var}max": err_max})
+
+
+def _percentile_interval(data, width):
+    """Return a percentile interval from data of a given width."""
+    edge = (100 - width) / 2
+    percentiles = edge, 100 - edge
+    return np.nanpercentile(data, percentiles)
+
+
+def _validate_errorbar_arg(arg):
+    """Check type and value of errorbar argument and assign default level."""
+    DEFAULT_LEVELS = {
+        "ci": 95,
+        "pi": 95,
+        "se": 1,
+        "sd": 1,
+    }
+
+    usage = "`errorbar` must be a callable, string, or (string, number) tuple"
+
+    if arg is None:
+        return None, None
+    elif callable(arg):
+        return arg, None
+    elif isinstance(arg, str):
+        method = arg
+        level = DEFAULT_LEVELS.get(method, None)
+    else:
+        try:
+            method, level = arg
+        except (ValueError, TypeError) as err:
+            raise err.__class__(usage) from err
+
+    _check_argument("errorbar", list(DEFAULT_LEVELS), method)
+    if level is not None and not isinstance(level, Number):
+        raise TypeError(usage)
+
+    return method, level

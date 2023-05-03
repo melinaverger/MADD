@@ -31,6 +31,7 @@ def guess_extension_without_jpe(mimetype):
 
 
 def platform_utf_8_encode(data):
+    """Encode data based on platform."""
     if isinstance(data, str):
         if sys.platform == "win32":
             data = data.replace("\n", "\r\n")
@@ -52,7 +53,7 @@ class ExtractOutputPreprocessor(Preprocessor):
         config=True
     )
 
-    def preprocess_cell(self, cell, resources, cell_index):
+    def preprocess_cell(self, cell, resources, cell_index):  # noqa
         """
         Apply a transformation on each cell,
 
@@ -131,7 +132,7 @@ class ExtractOutputPreprocessor(Preprocessor):
                     out.metadata["filenames"][mime_type] = filename
 
                     if filename in resources["outputs"]:
-                        raise ValueError(
+                        msg = (
                             "Your outputs have filename metadata associated "
                             "with them. Nbconvert saves these outputs to "
                             "external files using this filename metadata. "
@@ -141,6 +142,7 @@ class ExtractOutputPreprocessor(Preprocessor):
                             "output associated with this filename is in cell "
                             "{}.".format(filename, cell_index)
                         )
+                        raise ValueError(msg)
                     # In the resources, make the figure available via
                     #   resources['outputs']['filename'] = data
                     resources["outputs"][filename] = data

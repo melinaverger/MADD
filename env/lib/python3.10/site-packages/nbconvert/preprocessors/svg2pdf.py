@@ -14,7 +14,8 @@ from tempfile import TemporaryDirectory
 
 from traitlets import List, Unicode, Union, default
 
-from ..utils.io import FormatSafeDict
+from nbconvert.utils.io import FormatSafeDict
+
 from .convertfigures import ConvertFiguresPreprocessor
 
 # inkscape path for darwin (macOS)
@@ -57,7 +58,8 @@ class SVG2PDFPreprocessor(ConvertFiguresPreprocessor):
         )
         output, _ = p.communicate()
         if p.returncode != 0:
-            raise RuntimeError("Unable to find inkscape executable --version")
+            msg = "Unable to find inkscape executable --version"
+            raise RuntimeError(msg)
         return output.decode("utf-8").split(" ")[1]
 
     # FIXME: Deprecate passing a string here
@@ -113,7 +115,8 @@ class SVG2PDFPreprocessor(ConvertFiguresPreprocessor):
                 rkey = winreg.OpenKey(wr_handle, "SOFTWARE\\Classes\\inkscape.svg\\DefaultIcon")
                 inkscape = winreg.QueryValueEx(rkey, "")[0]
             except FileNotFoundError:
-                raise FileNotFoundError("Inkscape executable not found")
+                msg = "Inkscape executable not found"
+                raise FileNotFoundError(msg) from None
             return inkscape
         return "inkscape"
 
@@ -124,7 +127,6 @@ class SVG2PDFPreprocessor(ConvertFiguresPreprocessor):
 
         # Work in a temporary directory
         with TemporaryDirectory() as tmpdir:
-
             # Write fig to temp file
             input_filename = os.path.join(tmpdir, "figure.svg")
             # SVG data is unicode text
@@ -150,4 +152,5 @@ class SVG2PDFPreprocessor(ConvertFiguresPreprocessor):
                     # PDF is a nb supported binary, data type, so base64 encode.
                     return base64.encodebytes(f.read()).decode("utf-8")
             else:
-                raise TypeError("Inkscape svg to pdf conversion failed")
+                msg = "Inkscape svg to pdf conversion failed"
+                raise TypeError(msg)

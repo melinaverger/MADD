@@ -104,7 +104,6 @@ All the changes since then are under the same license as IPython.
 import inspect
 import linecache
 import sys
-import warnings
 import re
 import os
 
@@ -592,7 +591,7 @@ class Pdb(OldPdb):
         """
         if not args.strip():
             print("current predicates:")
-            for (p, v) in self._predicates.items():
+            for p, v in self._predicates.items():
                 print("   ", p, ":", v)
             return
         type_value = args.strip().split(" ")
@@ -839,7 +838,6 @@ class Pdb(OldPdb):
         return False
 
     def stop_here(self, frame):
-
         if self._is_in_decorator_internal_and_should_skip(frame) is True:
             return False
 

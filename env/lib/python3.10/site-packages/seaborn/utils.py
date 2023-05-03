@@ -4,29 +4,21 @@ import re
 import inspect
 import warnings
 import colorsys
+from contextlib import contextmanager
 from urllib.request import urlopen, urlretrieve
 
 import numpy as np
-from scipy import stats
 import pandas as pd
 import matplotlib as mpl
-import matplotlib.colors as mplcol
+from matplotlib.colors import to_rgb
 import matplotlib.pyplot as plt
 from matplotlib.cbook import normalize_kwargs
 
+from .external.version import Version
+from .external.appdirs import user_cache_dir
 
 __all__ = ["desaturate", "saturate", "set_hls_values", "move_legend",
            "despine", "get_dataset_names", "get_data_home", "load_dataset"]
-
-
-def sort_df(df, *args, **kwargs):
-    """Wrapper to handle different pandas sorting API pre/post 0.17."""
-    msg = "This function is deprecated and will be removed in a future version"
-    warnings.warn(msg)
-    try:
-        return df.sort_values(*args, **kwargs)
-    except AttributeError:
-        return df.sort(*args, **kwargs)
 
 
 def ci_to_errsize(cis, heights):
@@ -59,34 +51,27 @@ def ci_to_errsize(cis, heights):
     return errsize
 
 
-def pmf_hist(a, bins=10):
-    """Return arguments to plt.bar for pmf-like histogram of an array.
+def _normal_quantile_func(q):
+    """
+    Compute the quantile function of the standard normal distribution.
 
-    DEPRECATED: will be removed in a future version.
-
-    Parameters
-    ----------
-    a: array-like
-        array to make histogram of
-    bins: int
-        number of bins
-
-    Returns
-    -------
-    x: array
-        left x position of bars
-    h: array
-        height of bars
-    w: float
-        width of bars
+    This wrapper exists because we are dropping scipy as a mandatory dependency
+    but statistics.NormalDist was added to the standard library in 3.8.
 
     """
-    msg = "This function is deprecated and will be removed in a future version"
-    warnings.warn(msg, FutureWarning)
-    n, x = np.histogram(a, bins)
-    h = n / n.sum()
-    w = x[1] - x[0]
-    return x[:-1], h, w
+    try:
+        from statistics import NormalDist
+        qf = np.vectorize(NormalDist().inv_cdf)
+    except ImportError:
+        try:
+            from scipy.stats import norm
+            qf = norm.ppf
+        except ImportError:
+            msg = (
+                "Standard normal quantile functions require either Python>=3.8 or scipy"
+            )
+            raise RuntimeError(msg)
+    return qf(q)
 
 
 def _draw_figure(fig):
@@ -98,6 +83,90 @@ def _draw_figure(fig):
             fig.draw(fig.canvas.get_renderer())
         except AttributeError:
             pass
+
+
+def _default_color(method, hue, color, kws):
+    """If needed, get a default color by using the matplotlib property cycle."""
+
+    if hue is not None:
+        # This warning is probably user-friendly, but it's currently triggered
+        # in a FacetGrid context and I don't want to mess with that logic right now
+        #  if color is not None:
+        #      msg = "`color` is ignored when `hue` is assigned."
+        #      warnings.warn(msg)
+        return None
+
+    kws = kws.copy()
+    kws.pop("label", None)
+
+    if color is not None:
+        return color
+
+    elif method.__name__ == "plot":
+
+        color = _normalize_kwargs(kws, mpl.lines.Line2D).get("color")
+        scout, = method([], [], scalex=False, scaley=False, color=color)
+        color = scout.get_color()
+        scout.remove()
+
+    elif method.__name__ == "scatter":
+
+        # Matplotlib will raise if the size of x/y don't match s/c,
+        # and the latter might be in the kws dict
+        scout_size = max(
+            np.atleast_1d(kws.get(key, [])).shape[0]
+            for key in ["s", "c", "fc", "facecolor", "facecolors"]
+        )
+        scout_x = scout_y = np.full(scout_size, np.nan)
+
+        scout = method(scout_x, scout_y, **kws)
+        facecolors = scout.get_facecolors()
+
+        if not len(facecolors):
+            # Handle bug in matplotlib <= 3.2 (I think)
+            # This will limit the ability to use non color= kwargs to specify
+            # a color in versions of matplotlib with the bug, but trying to
+            # work out what the user wanted by re-implementing the broken logic
+            # of inspecting the kwargs is probably too brittle.
+            single_color = False
+        else:
+            single_color = np.unique(facecolors, axis=0).shape[0] == 1
+
+        # Allow the user to specify an array of colors through various kwargs
+        if "c" not in kws and single_color:
+            color = to_rgb(facecolors[0])
+
+        scout.remove()
+
+    elif method.__name__ == "bar":
+
+        # bar() needs masked, not empty data, to generate a patch
+        scout, = method([np.nan], [np.nan], **kws)
+        color = to_rgb(scout.get_facecolor())
+        scout.remove()
+
+    elif method.__name__ == "fill_between":
+
+        # There is a bug on matplotlib < 3.3 where fill_between with
+        # datetime units and empty data will set incorrect autoscale limits
+        # To workaround it, we'll always return the first color in the cycle.
+        # https://github.com/matplotlib/matplotlib/issues/17586
+        ax = method.__self__
+        datetime_axis = any([
+            isinstance(ax.xaxis.converter, mpl.dates.DateConverter),
+            isinstance(ax.yaxis.converter, mpl.dates.DateConverter),
+        ])
+        if Version(mpl.__version__) < Version("3.3") and datetime_axis:
+            return "C0"
+
+        kws = _normalize_kwargs(kws, mpl.collections.PolyCollection)
+
+        scout = method([], [], **kws)
+        facecolor = scout.get_facecolor()
+        color = to_rgb(facecolor[0])
+        scout.remove()
+
+    return color
 
 
 def desaturate(color, prop):
@@ -121,7 +190,7 @@ def desaturate(color, prop):
         raise ValueError("prop must be between 0 and 1")
 
     # Get rgb tuple rep
-    rgb = mplcol.colorConverter.to_rgb(color)
+    rgb = to_rgb(color)
 
     # Convert to hls
     h, l, s = colorsys.rgb_to_hls(*rgb)
@@ -169,7 +238,7 @@ def set_hls_values(color, h=None, l=None, s=None):  # noqa
 
     """
     # Get an RGB tuple representation
-    rgb = mplcol.colorConverter.to_rgb(color)
+    rgb = to_rgb(color)
     vals = list(colorsys.rgb_to_hls(*rgb))
     for i, val in enumerate([h, l, s]):
         if val is not None:
@@ -427,87 +496,10 @@ def _kde_support(data, bw, gridsize, cut, clip):
     return support
 
 
-def percentiles(a, pcts, axis=None):
-    """Like scoreatpercentile but can take and return array of percentiles.
-
-    DEPRECATED: will be removed in a future version.
-
-    Parameters
-    ----------
-    a : array
-        data
-    pcts : sequence of percentile values
-        percentile or percentiles to find score at
-    axis : int or None
-        if not None, computes scores over this axis
-
-    Returns
-    -------
-    scores: array
-        array of scores at requested percentiles
-        first dimension is length of object passed to ``pcts``
-
-    """
-    msg = "This function is deprecated and will be removed in a future version"
-    warnings.warn(msg, FutureWarning)
-
-    scores = []
-    try:
-        n = len(pcts)
-    except TypeError:
-        pcts = [pcts]
-        n = 0
-    for i, p in enumerate(pcts):
-        if axis is None:
-            score = stats.scoreatpercentile(a.ravel(), p)
-        else:
-            score = np.apply_along_axis(stats.scoreatpercentile, axis, a, p)
-        scores.append(score)
-    scores = np.asarray(scores)
-    if not n:
-        scores = scores.squeeze()
-    return scores
-
-
 def ci(a, which=95, axis=None):
     """Return a percentile range from an array of values."""
     p = 50 - which / 2, 50 + which / 2
     return np.nanpercentile(a, p, axis)
-
-
-def sig_stars(p):
-    """Return a R-style significance string corresponding to p values.
-
-    DEPRECATED: will be removed in a future version.
-
-    """
-    msg = "This function is deprecated and will be removed in a future version"
-    warnings.warn(msg, FutureWarning)
-
-    if p < 0.001:
-        return "***"
-    elif p < 0.01:
-        return "**"
-    elif p < 0.05:
-        return "*"
-    elif p < 0.1:
-        return "."
-    return ""
-
-
-def iqr(a):
-    """Calculate the IQR for an array of numbers.
-
-    DEPRECATED: will be removed in a future version.
-
-    """
-    msg = "This function is deprecated and will be removed in a future version"
-    warnings.warn(msg, FutureWarning)
-
-    a = np.asarray(a)
-    q1 = stats.scoreatpercentile(a, 25)
-    q3 = stats.scoreatpercentile(a, 75)
-    return q3 - q1
 
 
 def get_dataset_names():
@@ -528,15 +520,15 @@ def get_dataset_names():
 def get_data_home(data_home=None):
     """Return a path to the cache directory for example datasets.
 
-    This directory is then used by :func:`load_dataset`.
+    This directory is used by :func:`load_dataset`.
 
-    If the ``data_home`` argument is not specified, it tries to read from the
-    ``SEABORN_DATA`` environment variable and defaults to ``~/seaborn-data``.
+    If the ``data_home`` argument is not provided, it will use a directory
+    specified by the `SEABORN_DATA` environment variable (if it exists)
+    or otherwise default to an OS-appropriate user cache location.
 
     """
     if data_home is None:
-        data_home = os.environ.get('SEABORN_DATA',
-                                   os.path.join('~', 'seaborn-data'))
+        data_home = os.environ.get("SEABORN_DATA", user_cache_dir("seaborn"))
     data_home = os.path.expanduser(data_home)
     if not os.path.exists(data_home):
         os.makedirs(data_home)
@@ -611,23 +603,23 @@ def load_dataset(name, cache=True, data_home=None, **kws):
         df["time"] = pd.Categorical(df["time"], ["Lunch", "Dinner"])
         df["smoker"] = pd.Categorical(df["smoker"], ["Yes", "No"])
 
-    if name == "flights":
+    elif name == "flights":
         months = df["month"].str[:3]
         df["month"] = pd.Categorical(months, months.unique())
 
-    if name == "exercise":
+    elif name == "exercise":
         df["time"] = pd.Categorical(df["time"], ["1 min", "15 min", "30 min"])
         df["kind"] = pd.Categorical(df["kind"], ["rest", "walking", "running"])
         df["diet"] = pd.Categorical(df["diet"], ["no fat", "low fat"])
 
-    if name == "titanic":
+    elif name == "titanic":
         df["class"] = pd.Categorical(df["class"], ["First", "Second", "Third"])
         df["deck"] = pd.Categorical(df["deck"], list("ABCDEFG"))
 
-    if name == "penguins":
+    elif name == "penguins":
         df["sex"] = df["sex"].str.title()
 
-    if name == "diamonds":
+    elif name == "diamonds":
         df["color"] = pd.Categorical(
             df["color"], ["D", "E", "F", "G", "H", "I", "J"],
         )
@@ -637,6 +629,16 @@ def load_dataset(name, cache=True, data_home=None, **kws):
         df["cut"] = pd.Categorical(
             df["cut"], ["Ideal", "Premium", "Very Good", "Good", "Fair"],
         )
+
+    elif name == "taxis":
+        df["pickup"] = pd.to_datetime(df["pickup"])
+        df["dropoff"] = pd.to_datetime(df["dropoff"])
+
+    elif name == "seaice":
+        df["Date"] = pd.to_datetime(df["Date"])
+
+    elif name == "dowjones":
+        df["Date"] = pd.to_datetime(df["Date"])
 
     return df
 
@@ -697,6 +699,10 @@ def locator_to_legend_entries(locator, limits, dtype):
         formatter = mpl.ticker.LogFormatter()
     else:
         formatter = mpl.ticker.ScalarFormatter()
+        # Avoid having an offset/scientific notation which we don't currently
+        # have any way of representing in the legend
+        formatter.set_useOffset(False)
+        formatter.set_scientific(False)
     formatter.axis = dummy_axis()
 
     # TODO: The following two lines should be replaced
@@ -783,7 +789,7 @@ def _check_argument(param, options, value):
     """Raise if value for param is not in options."""
     if value not in options:
         raise ValueError(
-            f"`{param}` must be one of {options}, but {value} was passed.`"
+            f"`{param}` must be one of {options}, but {repr(value)} was passed."
         )
 
 
@@ -792,7 +798,7 @@ def _assign_default_kwargs(kws, call_func, source_func):
     # This exists so that axes-level functions and figure-level functions can
     # both call a Plotter method while having the default kwargs be defined in
     # the signature of the axes-level function.
-    # An alternative would be to  have a decorator on the method that sets its
+    # An alternative would be to have a decorator on the method that sets its
     # defaults based on those defined in the axes-level function.
     # Then the figure-level function would not need to worry about defaults.
     # I am not sure which is better.
@@ -807,7 +813,12 @@ def _assign_default_kwargs(kws, call_func, source_func):
 
 
 def adjust_legend_subtitles(legend):
-    """Make invisible-handle "subtitles" entries look more like titles."""
+    """
+    Make invisible-handle "subtitles" entries look more like titles.
+
+    Note: This function is not part of the public API and may be changed or removed.
+
+    """
     # Legend title not in rcParams until 3.0
     font_size = plt.rcParams.get("legend.title_fontsize", None)
     hpackers = legend.findobj(mpl.offsetbox.VPacker)[0].get_children()
@@ -819,3 +830,47 @@ def adjust_legend_subtitles(legend):
             for text in text_area.get_children():
                 if font_size is not None:
                     text.set_size(font_size)
+
+
+def _deprecate_ci(errorbar, ci):
+    """
+    Warn on usage of ci= and convert to appropriate errorbar= arg.
+
+    ci was deprecated when errorbar was added in 0.12. It should not be removed
+    completely for some time, but it can be moved out of function definitions
+    (and extracted from kwargs) after one cycle.
+
+    """
+    if ci != "deprecated":
+        if ci is None:
+            errorbar = None
+        elif ci == "sd":
+            errorbar = "sd"
+        else:
+            errorbar = ("ci", ci)
+        msg = (
+            "\n\nThe `ci` parameter is deprecated. "
+            f"Use `errorbar={repr(errorbar)}` for the same effect.\n"
+        )
+        warnings.warn(msg, FutureWarning, stacklevel=3)
+
+    return errorbar
+
+
+@contextmanager
+def _disable_autolayout():
+    """Context manager for preventing rc-controlled auto-layout behavior."""
+    # This is a workaround for an issue in matplotlib, for details see
+    # https://github.com/mwaskom/seaborn/issues/2914
+    # The only affect of this rcParam is to set the default value for
+    # layout= in plt.figure, so we could just do that instead.
+    # But then we would need to own the complexity of the transition
+    # from tight_layout=True -> layout="tight". This seems easier,
+    # but can be removed when (if) that is simpler on the matplotlib side,
+    # or if the layout algorithms are improved to handle figure legends.
+    orig_val = mpl.rcParams["figure.autolayout"]
+    try:
+        mpl.rcParams["figure.autolayout"] = False
+        yield
+    finally:
+        mpl.rcParams["figure.autolayout"] = orig_val

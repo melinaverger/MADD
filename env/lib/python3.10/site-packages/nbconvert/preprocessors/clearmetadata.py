@@ -38,6 +38,7 @@ class ClearMetadataPreprocessor(Preprocessor):
     ).tag(config=True)
 
     def current_key(self, mask_key):
+        """Get the current key for a mask key."""
         if isinstance(mask_key, str):
             return mask_key
         elif len(mask_key) == 0:
@@ -47,9 +48,11 @@ class ClearMetadataPreprocessor(Preprocessor):
             return mask_key[0]
 
     def current_mask(self, mask):
+        """Get the current mask for a mask."""
         return {self.current_key(k) for k in mask if self.current_key(k) is not None}
 
     def nested_masks(self, mask):
+        """Get the nested masks for a mask."""
         return {
             self.current_key(k[0]): k[1:]
             for k in mask
@@ -57,6 +60,7 @@ class ClearMetadataPreprocessor(Preprocessor):
         }
 
     def nested_filter(self, items, mask):
+        """Get the nested filter for items given a mask."""
         keep_current = self.current_mask(mask)
         keep_nested_lookup = self.nested_masks(mask)
         for k, v in items:
@@ -72,13 +76,12 @@ class ClearMetadataPreprocessor(Preprocessor):
         """
         All the code cells are returned with an empty metadata field.
         """
-        if self.clear_cell_metadata:
-            if cell.cell_type == "code":
-                # Remove metadata
-                if "metadata" in cell:
-                    cell.metadata = dict(
-                        self.nested_filter(cell.metadata.items(), self.preserve_cell_metadata_mask)
-                    )
+        if self.clear_cell_metadata and cell.cell_type == "code":  # noqa
+            # Remove metadata
+            if "metadata" in cell:
+                cell.metadata = dict(
+                    self.nested_filter(cell.metadata.items(), self.preserve_cell_metadata_mask)
+                )
         return cell, resources
 
     def preprocess(self, nb, resources):
@@ -96,9 +99,8 @@ class ClearMetadataPreprocessor(Preprocessor):
             preprocessors to pass variables into the Jinja engine.
         """
         nb, resources = super().preprocess(nb, resources)
-        if self.clear_notebook_metadata:
-            if "metadata" in nb:
-                nb.metadata = dict(
-                    self.nested_filter(nb.metadata.items(), self.preserve_nb_metadata_mask)
-                )
+        if self.clear_notebook_metadata and "metadata" in nb:
+            nb.metadata = dict(
+                self.nested_filter(nb.metadata.items(), self.preserve_nb_metadata_mask)
+            )
         return nb, resources

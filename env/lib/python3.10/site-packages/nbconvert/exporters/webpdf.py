@@ -7,10 +7,13 @@ import asyncio
 import concurrent.futures
 import os
 import tempfile
+from importlib import util as importlib_util
 
 from traitlets import Bool, default
 
 from .html import HTMLExporter
+
+PYPPETEER_INSTALLED = importlib_util.find_spec("pyppeteer") is not None
 
 
 class WebPDFExporter(HTMLExporter):
@@ -64,24 +67,27 @@ class WebPDFExporter(HTMLExporter):
 
     def _check_launch_reqs(self):
         try:
-            from pyppeteer import launch
-            from pyppeteer.util import check_chromium
+            from pyppeteer import launch  # type: ignore[import]
+            from pyppeteer.util import check_chromium  # type:ignore
         except ModuleNotFoundError as e:
-            raise RuntimeError(
+            msg = (
                 "Pyppeteer is not installed to support Web PDF conversion. "
                 "Please install `nbconvert[webpdf]` to enable."
-            ) from e
+            )
+            raise RuntimeError(msg) from e
         if not self.allow_chromium_download and not check_chromium():
-            raise RuntimeError(
+            msg = (
                 "No suitable chromium executable found on the system. "
                 "Please use '--allow-chromium-download' to allow downloading one."
             )
+            raise RuntimeError(msg)
         return launch
 
     def run_pyppeteer(self, html):
         """Run pyppeteer."""
 
         async def main(temp_file):
+            """Run main pyppeteer script."""
             args = ["--no-sandbox"] if self.disable_sandbox else []
             browser = await self._check_launch_reqs()(
                 handleSIGINT=False, handleSIGTERM=False, handleSIGHUP=False, args=args
@@ -132,6 +138,7 @@ class WebPDFExporter(HTMLExporter):
             # TODO: when dropping Python 3.6, use
             # pdf_data = pool.submit(asyncio.run, main(temp_file)).result()
             def run_coroutine(coro):
+                """Run an internal coroutine."""
                 loop = asyncio.new_event_loop()
                 asyncio.set_event_loop(loop)
                 return loop.run_until_complete(coro)
@@ -143,6 +150,7 @@ class WebPDFExporter(HTMLExporter):
         return pdf_data
 
     def from_notebook_node(self, nb, resources=None, **kw):
+        """Convert from a notebook node."""
         self._check_launch_reqs()
         html, resources = super().from_notebook_node(nb, resources=resources, **kw)
 

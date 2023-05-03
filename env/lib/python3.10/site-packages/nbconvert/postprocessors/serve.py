@@ -60,10 +60,10 @@ class ServePostProcessor(PostProcessorBase):
     ip = Unicode("127.0.0.1", help="The IP address to listen on.").tag(config=True)
     port = Int(8000, help="port for the server to listen on.").tag(config=True)
 
-    def postprocess(self, input):
+    def postprocess(self, input):  # noqa
         """Serve the build directory with a webserver."""
         dirname, filename = os.path.split(input)
-        handlers = [
+        handlers: list = [
             (r"/(.+)", web.StaticFileHandler, {"path": dirname}),
             (r"/", web.RedirectHandler, {"url": "/%s" % filename}),
         ]

@@ -11,17 +11,10 @@ import mimetypes
 import os
 import re
 from functools import partial
-
-try:
-    from html import escape
-
-    html_escape = partial(escape, quote=False)
-except ImportError:
-    # Python 2
-    from cgi import escape as html_escape
+from html import escape
 
 import bs4
-from mistune import PLUGINS, BlockParser, HTMLRenderer, InlineParser, Markdown
+from mistune import PLUGINS, BlockParser, HTMLRenderer, InlineParser, Markdown  # type:ignore
 from pygments import highlight
 from pygments.formatters import HtmlFormatter
 from pygments.lexers import get_lexer_by_name
@@ -29,8 +22,12 @@ from pygments.util import ClassNotFound
 
 from nbconvert.filters.strings import add_anchor
 
+html_escape = partial(escape, quote=False)
 
-class InvalidNotebook(Exception):
+
+class InvalidNotebook(Exception):  # noqa
+    """An invalid notebook model."""
+
     pass
 
 
@@ -46,7 +43,7 @@ class MathBlockParser(BlockParser):
         re.DOTALL,
     )
 
-    RULE_NAMES = ("multiline_math",) + BlockParser.RULE_NAMES
+    RULE_NAMES = ("multiline_math", *BlockParser.RULE_NAMES)
 
     # Regex for header that doesn't require space after '#'
     AXT_HEADING = re.compile(r" {0,3}(#{1,6})(?!#+)(?: *\n+|([^\n]*?)(?:\n+|\s+?#+\s*\n+))")
@@ -87,33 +84,42 @@ class MathInlineParser(InlineParser):
         "inline_math_tex",
         "inline_math_latex",
         "latex_environment",
-    ) + InlineParser.RULE_NAMES
+        *InlineParser.RULE_NAMES,
+    )
 
     def parse_block_math_tex(self, m, state):
+        """Parse block text math."""
         # sometimes the Scanner keeps the final '$$', so we use the
         # full matched string and remove the math markers
         text = m.group(0)[2:-2]
         return "block_math", text
 
     def parse_block_math_latex(self, m, state):
+        """Parse block latex math ."""
         text = m.group(1)
         return "block_math", text
 
     def parse_inline_math_tex(self, m, state):
+        """Parse inline tex math."""
         text = m.group(1)
         return "inline_math", text
 
     def parse_inline_math_latex(self, m, state):
+        """Parse inline latex math."""
         text = m.group(1)
         return "inline_math", text
 
     def parse_latex_environment(self, m, state):
+        """Parse a latex environment."""
         name, text = m.group(1), m.group(2)
         return "latex_environment", name, text
 
 
 class MarkdownWithMath(Markdown):
+    """Markdown text with math enabled."""
+
     def __init__(self, renderer, block=None, inline=None, plugins=None):
+        """Initialize the parser."""
         if block is None:
             block = MathBlockParser()
         if inline is None:
@@ -143,7 +149,9 @@ class MarkdownWithMath(Markdown):
 
 
 class IPythonRenderer(HTMLRenderer):
-    def __init__(
+    """An ipython html renderer."""
+
+    def __init__(  # noqa
         self,
         escape=True,
         allow_harmful_protocols=True,
@@ -153,6 +161,7 @@ class IPythonRenderer(HTMLRenderer):
         path="",
         attachments=None,
     ):
+        """Initialize the renderer."""
         super().__init__(escape, allow_harmful_protocols)
         self.embed_images = embed_images
         self.exclude_anchor_links = exclude_anchor_links
@@ -164,6 +173,7 @@ class IPythonRenderer(HTMLRenderer):
             self.attachments = {}
 
     def block_code(self, code, info=None):
+        """Handle block code."""
         lang = ""
         lexer = None
         if info:
@@ -172,7 +182,7 @@ class IPythonRenderer(HTMLRenderer):
                 lexer = get_lexer_by_name(lang, stripall=True)
             except ClassNotFound:
                 code = lang + "\n" + code
-                lang = None
+                lang = None  # type:ignore
 
         if not lang:
             return super().block_code(code)
@@ -181,37 +191,45 @@ class IPythonRenderer(HTMLRenderer):
         return highlight(code, lexer, formatter)
 
     def block_html(self, html):
+        """Handle block html."""
         if self.embed_images:
             html = self._html_embed_images(html)
 
         return super().block_html(html)
 
     def inline_html(self, html):
+        """Handle inline html."""
         if self.embed_images:
             html = self._html_embed_images(html)
 
         return super().inline_html(html)
 
     def heading(self, text, level):
+        """Handle a heading."""
         html = super().heading(text, level)
         if self.exclude_anchor_links:
             return html
         return add_anchor(html, anchor_link_text=self.anchor_link_text)
 
     def escape_html(self, text):
+        """Escape html content."""
         return html_escape(text)
 
     def multiline_math(self, text):
+        """Handle mulitline math."""
         return text
 
     def block_math(self, text):
+        """Handle block math."""
         return f"$${self.escape_html(text)}$$"
 
     def latex_environment(self, name, text):
+        """Handle a latex environment."""
         name, text = self.escape_html(name), self.escape_html(text)
         return f"\\begin{{{name}}}{text}\\end{{{name}}}"
 
     def inline_math(self, text):
+        """Handle inline math."""
         return f"${self.escape_html(text)}$"
 
     def image(self, src, text, title):
@@ -227,7 +245,8 @@ class IPythonRenderer(HTMLRenderer):
             name = src[len(attachment_prefix) :]
 
             if name not in self.attachments:
-                raise InvalidNotebook(f"missing attachment: {name}")
+                msg = f"missing attachment: {name}"
+                raise InvalidNotebook(msg)
 
             attachment = self.attachments[name]
             # we choose vector over raster, and lossless over lossy
@@ -264,9 +283,9 @@ class IPythonRenderer(HTMLRenderer):
             mime_type = mimetypes.guess_type(src_path)[0]
 
             base64_data = base64.b64encode(fobj.read())
-            base64_data = base64_data.replace(b"\n", b"").decode("ascii")
+            base64_str = base64_data.replace(b"\n", b"").decode("ascii")
 
-            return f"data:{mime_type};base64,{base64_data}"
+            return f"data:{mime_type};base64,{base64_str}"
 
     def _html_embed_images(self, html):
         parsed_html = bs4.BeautifulSoup(html, features="html.parser")
