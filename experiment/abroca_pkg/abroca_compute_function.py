@@ -41,7 +41,7 @@ def compute_abroca(
     Returns Abroca value
     """
 
-    if df[pred_col].between(0, 1, inclusive=True).any():
+    if df[pred_col].between(0, 1, inclusive="both").any():
         pass
     else:
         print("predictions must be in range [0,1]")
