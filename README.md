@@ -96,3 +96,7 @@ By running all `pipeline.ipynb`, it will also automatically run:
 * `abroca.ipynb`: to compute and visualize the  Absolute Between-ROC Area (ABROCA) for all models and all sensitive attributes.
 
 **N. B.:** The outputs of these notebooks are visible in their associated `nbconvert.ipynb` notebook versions.
+
+***
+
+## References
