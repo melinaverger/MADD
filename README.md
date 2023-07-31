@@ -1,4 +1,4 @@
-# Is Your Model “MADD”? A Novel Metric to Evaluate Algorithmic Fairness for Predictive Student Models
+# MADD, metric and post-processing
 
 [![Generic badge](https://img.shields.io/badge/python-3.10.4-green.svg)](https://shields.io/)
 
