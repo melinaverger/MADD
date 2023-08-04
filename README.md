@@ -33,7 +33,7 @@ $ pip install -r requirements.txt  /* or $ pip install env */
   > $ virtualenv --clear env
   > ```
   > 
-  > Download the following packages with `pip install <name of the package>` command line: pandas, scikit-learn, nbconvert, matplotlib, seaborn, tabulate.
+  > Download the following packages with `pip install <name of the package>` command line: pandas, scikit-learn, nbconvert, matplotlib, seaborn, tabulate, ipykernel.
 </details>
 &nbsp;  
 
