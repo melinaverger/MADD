@@ -10,7 +10,7 @@ The following instructions, and the other folders, are related to the experiment
 
 ## 1. Set up the project on your computer
 
-**N. B.:** We did not use a Python package manager (e.g. Anaconda) other than the package installer [pip](https://pip.pypa.io/en/latest/). [Git](https://git-scm.com) should be installed on your computer.
+**N. B.:** We did not use a Python package manager (e.g. Anaconda) other than the package installer [pip](https://pip.pypa.io/en/latest/). Plus, [Git](https://git-scm.com) should be installed on your computer.
 
 Clone this repository, either by `git clone` command line or by download the repository manually.
 
