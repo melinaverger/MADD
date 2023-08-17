@@ -2,7 +2,7 @@
 
 [![Generic badge](https://img.shields.io/badge/python-3.10.4-green.svg)](https://shields.io/)
 
-This repository contains all the source codes of the experiments of the papers in the [References](#references) section.
+This repository contains all the source code of the experiments of the papers in the [References](#references) section.
 
 The implementation of the fair post-processing method based on the MADD is located in the `post-processing` folder.
 
