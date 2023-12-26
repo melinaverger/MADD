@@ -2,7 +2,7 @@
 
 [![Generic badge](https://img.shields.io/badge/python-3.10.4-green.svg)](https://shields.io/)
 
-This repository contains all the source code of the experiments that were done in the papers of the [References](#references) section.
+This repository contains all the source code of the experiments that were done in the papers of the [References](../README.md) section.
 
 ## 1. Set up the project on your computer
 
@@ -78,15 +78,3 @@ By running all `pipeline.ipynb`, it will also automatically run:
 * `abroca.ipynb`: to compute and visualize the  Absolute Between-ROC Area (ABROCA) for all models and all sensitive attributes.
 
 **N. B.:** The outputs of these notebooks are visible in their associated `nbconvert.ipynb` notebook versions.
-
-***
-
-## References
-
-The links of the papers are [here](https://melinaverger.github.io/).
-
-Mélina Verger, Chunyang Fan, Sébastien Lallé, François Bouchet, Vanda Luengo. *A Fair Post-Processing Method based on the MADD Metric for Predictive Student Models*. 1st International Tutorial and Workshop on Responsible Knowledge Discovery in Education (RKDE 2023) at ECML PKDD 2023, September 2023, Turino, Italy.
-
-Mélina Verger, Sébastien Lallé, François Bouchet, Vanda Luengo. *Is Your Model "MADD"? A Novel Metric to Evaluate Algorithmic Fairness for Predictive Student Models*. Sixteenth International Conference on Educational Data Mining (EDM 2023), July 2023, Bangalore, India.
-
-Mélina Verger, François Bouchet, Sébastien Lallé, Vanda Luengo. *Caractérisation et mesure des comportements discriminants des modèles prédictifs*. 11ème Conférence sur les Environnements Informatiques pour l'Apprentissage Humain (EIAH 2023), June 2023, Brest, France.
