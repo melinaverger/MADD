@@ -2,7 +2,7 @@
 
 [![Generic badge](https://img.shields.io/badge/python-3.10.4-green.svg)](https://shields.io/)
 
-This repository contains all the source code of the experiments that were done in the papers of the [References](../README.md) section.
+This repository contains all the source code of the experiments that were done in the papers of the [References](../README.md#references) section.
 
 ## 1. Set up the project on your computer
 
