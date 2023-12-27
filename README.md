@@ -4,14 +4,8 @@
 
 This repository contains all the source code of the experiments that were done in the papers of the [References](#references) section.
 
-<div class="alert alert-success">
-  <strong>Success!</strong> Indicates a successful or positive action.
-</div>
-
-A Python package has been developped [here](https://pypi.org/project/maddlib/) to evaluate and mitigate algorithmic unfairness with the MADD easily
-
 > [!NOTE]  
-> Highlights information that users should take into account, even when skimming.
+> A **Python package** has been developped [here](https://pypi.org/project/maddlib/) to evaluate and mitigate algorithmic unfairness with the MADD easily.
 
 ## MADD metric and MADD post-processing
 
