@@ -4,6 +4,15 @@
 
 This repository contains all the source code of the experiments that were done in the papers of the [References](#references) section.
 
+<div class="alert alert-success">
+  <strong>Success!</strong> Indicates a successful or positive action.
+</div>
+
+A Python package has been developped [here](https://pypi.org/project/maddlib/) to evaluate and mitigate algorithmic unfairness with the MADD easily
+
+> [!NOTE]  
+> Highlights information that users should take into account, even when skimming.
+
 ## MADD metric and MADD post-processing
 
 You can see more instructions in the READMEs from `initial_code` folder and in `RKDE_ECMLPKK2023 > post_processing` folder (on the one hand for evaluating with the MADD and on the other hand for mitigating based on the MADD).
