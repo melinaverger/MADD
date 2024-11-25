@@ -15,9 +15,9 @@ You can see more instructions in the READMEs from `initial_code` folder and in `
 
 The links of the published papers are [here](https://melinaverger.github.io/).
 
-[under review] Mélina Verger, François Bouchet, Sébastien Lallé, Vanda Luengo. ***Discriminations intersectionnelles : approfondir l’évaluation de l’équité algorithmique pour la prédiction de la réussite à des cours en ligne***. Revue STICEF. Edition numéro spécial «Sélection de la conférence EIAH 2023».
+[accepted] Mélina Verger, François Bouchet, Sébastien Lallé, Vanda Luengo. ***Discriminations intersectionnelles : approfondir l’évaluation de l’équité algorithmique. L’exemple de la prédiction de la réussite académique avec des données issues de cours en ligne***. Revue STICEF. Edition numéro spécial «Sélection de la conférence EIAH 2023».
 
-[under revision] Mélina Verger, Chunyang Fan, Sébastien Lallé, François Bouchet, Vanda Luengo. ***Evaluating and Mitigating Algorithmic Unfairness with the MADD Metric: An Optimal Computation Applied to Predictive Student Models***. Journal of Educational Data Mining. Special edition from EDM 2023 conference.
+Mélina Verger, Chunyang Fan, Sébastien Lallé, François Bouchet, Vanda Luengo. ***A Comprehensive Study on Evaluating and Mitigating Algorithmic Unfairness with the MADD Metric***. Journal of Educational Data Mining, 16 (1), 365–409. Special edition from EDM 2023 conference.
 
 Mélina Verger, Chunyang Fan, Sébastien Lallé, François Bouchet, Vanda Luengo. ***A Fair Post-Processing Method based on the MADD Metric for Predictive Student Models***. 1st International Tutorial and Workshop on Responsible Knowledge Discovery in Education (RKDE 2023) at ECML PKDD 2023, September 2023, Turino, Italy.
 
